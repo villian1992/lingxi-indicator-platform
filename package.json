@@ -4,9 +4,25 @@
   "description": "灵犀指标平台",
   "scripts": {
     "dev": "live-server --port=3000 --browser=chrome",
-    "start": "live-server --port=3000"
+    "start": "live-server --port=3000",
+    "deploy": "echo '部署前请先将仓库推送到GitHub并启用GitHub Pages'"
   },
   "devDependencies": {
     "live-server": "^1.2.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/villian1992/lingxi-indicator-platform.git"
+  },
+  "keywords": [
+    "指标平台",
+    "数据管理",
+    "企业级应用"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/villian1992/lingxi-indicator-platform/issues"
+  },
+  "homepage": "https://github.com/villian1992/lingxi-indicator-platform#readme"
 } 

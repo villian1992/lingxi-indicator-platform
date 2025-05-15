@@ -30,7 +30,7 @@
 
 1. 克隆仓库：
 ```bash
-git clone https://github.com/你的用户名/lingxi-indicator-platform.git
+git clone https://github.com/villian1992/lingxi-indicator-platform.git
 cd lingxi-indicator-platform
 ```
 
