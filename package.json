@@ -1,0 +1,12 @@
+{
+  "name": "lingxi-indicator-platform",
+  "version": "1.0.0",
+  "description": "灵犀指标平台",
+  "scripts": {
+    "dev": "live-server --port=3000 --browser=chrome",
+    "start": "live-server --port=3000"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+} 

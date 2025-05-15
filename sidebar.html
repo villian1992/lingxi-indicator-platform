@@ -1,0 +1,88 @@
+<style>
+.sidebar {
+    width: 240px;
+    background: #fff;
+    border-right: 1px solid #E5E7EB;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 20;
+}
+.nav-item {
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    user-select: none;
+}
+.nav-item:hover {
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.08);
+}
+.nav-item.active {
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.12);
+    border-right: 3px solid #10B981;
+    font-weight: 600;
+}
+.nav-item i {
+    width: 20px;
+    margin-right: 12px;
+    font-size: 18px;
+}
+</style>
+<div class="sidebar">
+    <div class="p-4 border-b border-gray-200">
+        <h1 class="text-xl font-semibold text-gray-800">灵犀指标平台</h1>
+    </div>
+    <nav class="mt-4">
+        <div class="nav-item" data-page="index.html" onclick="window.location.href='index.html'">
+            <i class="fas fa-chart-line"></i>
+            <span>指标中心</span>
+        </div>
+        <div class="nav-item" data-page="model.html">
+            <i class="fas fa-database"></i>
+            <span>数据建模</span>
+        </div>
+        <div class="nav-item" data-page="caliber.html">
+            <i class="fas fa-cog"></i>
+            <span>口径管理</span>
+        </div>
+        <div class="nav-item" data-page="audit.html">
+            <i class="fas fa-check-circle"></i>
+            <span>指标审核</span>
+        </div>
+        <div class="nav-item" data-page="dashboard.html">
+            <i class="fas fa-chart-bar"></i>
+            <span>指标看板</span>
+        </div>
+        <div class="nav-item" data-page="analysis.html">
+            <i class="fas fa-chart-pie"></i>
+            <span>使用分析</span>
+        </div>
+        <div class="nav-item" data-page="permission.html">
+            <i class="fas fa-shield-alt"></i>
+            <span>权限管理</span>
+        </div>
+        <div class="nav-item" data-page="dimension.html" onclick="window.location.href='dimension.html'">
+            <i class="fas fa-th-list"></i>
+            <span>维度管理</span>
+        </div>
+    </nav>
+</div>
+<script>
+// 自动高亮当前页面菜单
+(function(){
+    var page = location.pathname.split('/').pop();
+    var items = document.querySelectorAll('.sidebar .nav-item');
+    items.forEach(function(item){
+        if(item.getAttribute('data-page') === page){
+            item.classList.add('active');
+        }
+    });
+})();
+</script> 

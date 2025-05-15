@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>维度管理 - 灵犀指标平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#6B7280',
+                        accent: '#059669',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+    .main-content {
+        margin-left: 240px;
+        padding: 24px;
+        min-height: 100vh;
+        background: #F9FAFB;
+    }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="sidebar-container"></div>
+    <script>
+    fetch('sidebar.html').then(res=>res.text()).then(html=>{
+        document.getElementById('sidebar-container').innerHTML = html;
+    });
+    </script>
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-semibold">维度列表</h2>
+            <button id="add-dim-btn" class="px-4 py-2 bg-primary text-white rounded hover:bg-accent">
+                <i class="fas fa-plus mr-2"></i>新增维度
+            </button>
+        </div>
+        <div class="flex-1 flex flex-col items-center px-4 py-8">
+            <div class="w-full max-w-5xl">
+                <div id="dimension-card-list" class="grid grid-cols-2 gap-6"></div>
+            </div>
+        </div>
+        <!-- 新增/编辑弹窗 -->
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 w-96">
+                <h3 id="modal-title" class="text-lg font-semibold mb-4">新增维度</h3>
+                <input id="modal-input" type="text" class="w-full border border-gray-200 rounded px-3 py-2 mb-4 focus:outline-none focus:border-primary" placeholder="请输入维度名称">
+                <div class="flex justify-end gap-2">
+                    <button id="modal-cancel" class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">取消</button>
+                    <button id="modal-save" class="px-4 py-2 bg-primary text-white rounded hover:bg-accent">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 示例初始维度
+        let defaultDims = [
+            { name: '所在地区', count: 3 },
+            { name: '品牌', count: 2 },
+            { name: '合作商户', count: 5 },
+            { name: '对接商务', count: 4 },
+            { name: '签约商务', count: 2 },
+            { name: '部门', count: 3 },
+            { name: '部门经理', count: 2 },
+            { name: '负责地区', count: 1 }
+        ];
+        let dimensions = JSON.parse(localStorage.getItem('lingxi_dimensions') || 'null') || defaultDims;
+        let editIndex = null;
+        function renderTable() {
+            // 表格已废弃，改为卡片式
+            const cardList = document.getElementById('dimension-card-list');
+            cardList.innerHTML = dimensions.map((d, i) => `
+                <div class='bg-white rounded-lg shadow p-6 flex flex-col justify-between metric-card'>
+                    <div class='flex justify-between items-start mb-2'>
+                        <div>
+                            <h3 class='text-lg font-semibold'>${d.name}</h3>
+                        </div>
+                        <span class='px-2 py-1 bg-primary/10 text-primary rounded text-sm'>维度</span>
+                    </div>
+                    <div class='mb-4 text-gray-500 text-sm'>已关联指标数：<span class='font-bold text-gray-800'>${d.count}</span></div>
+                    <div class='flex gap-2'>
+                        <button class='px-3 py-1 text-sm text-primary hover:bg-primary/10 rounded flex items-center' onclick='editDim(${i})'><i class="fas fa-edit mr-1"></i>编辑</button>
+                        <button class='px-3 py-1 text-sm text-red-500 hover:bg-red-50 rounded flex items-center' onclick='deleteDim(${i})'><i class="fas fa-trash mr-1"></i>删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function saveDims() {
+            localStorage.setItem('lingxi_dimensions', JSON.stringify(dimensions));
+        }
+        function showModal(title, value = '', idx = null) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-input').value = value;
+            document.getElementById('modal').classList.remove('hidden');
+            editIndex = idx;
+        }
+        function hideModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+        document.getElementById('add-dim-btn').onclick = function() {
+            showModal('新增维度');
+        };
+        document.getElementById('modal-cancel').onclick = hideModal;
+        document.getElementById('modal-save').onclick = function() {
+            const val = document.getElementById('modal-input').value.trim();
+            if(!val) return alert('请输入维度名称');
+            if(editIndex === null) {
+                dimensions.push({ name: val, count: 0 });
+            } else {
+                dimensions[editIndex].name = val;
+            }
+            saveDims();
+            hideModal();
+            renderTable();
+        };
+        window.editDim = function(idx) {
+            showModal('编辑维度', dimensions[idx].name, idx);
+        };
+        window.deleteDim = function(idx) {
+            if(confirm('确定要删除该维度吗？')) {
+                dimensions.splice(idx, 1);
+                saveDims();
+                renderTable();
+            }
+        };
+        renderTable();
+    </script>
+</body>
+</html> 

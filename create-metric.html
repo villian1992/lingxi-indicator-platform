@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建指标 - 灵犀指标平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#6B7280',
+                        accent: '#059669',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .step-bar { display: flex; gap: 8px; }
+        .step-indicator {
+            display: flex; flex-direction: column; align-items: center; flex: 1;
+        }
+        .step-circle {
+            width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 18px; margin-bottom: 4px;
+            background: #E5E7EB; color: #6B7280; border: 2px solid #E5E7EB;
+            transition: all 0.2s;
+        }
+        .step-indicator.active .step-circle {
+            background: #10B981; color: #fff; border-color: #10B981;
+        }
+        .step-label { color: #6B7280; font-size: 14px; }
+        .step-indicator.active .step-label { color: #10B981; font-weight: bold; }
+        
+        /* 多选下拉框样式 */
+        .multiselect-container {
+            position: relative;
+            width: 100%;
+        }
+        .multiselect-box {
+            width: 100%;
+            min-height: 38px;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.25rem;
+            padding: 4px 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            background: white;
+        }
+        .multiselect-box:focus {
+            outline: none;
+            border-color: #10B981;
+        }
+        .multiselect-tag {
+            background: #E5F7F0;
+            color: #10B981;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .multiselect-tag-remove {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .multiselect-placeholder {
+            color: #9CA3AF;
+        }
+        .multiselect-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .multiselect-dropdown.show {
+            display: block;
+        }
+        .multiselect-option {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .multiselect-option:hover {
+            background: #F3F4F6;
+        }
+        .multiselect-option.selected {
+            background: #E5F7F0;
+            color: #10B981;
+        }
+        .multiselect-search {
+            padding: 8px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .multiselect-search input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- 顶部导航 -->
+        <div class="header h-16 bg-white border-b border-gray-200 flex items-center px-8 justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick="window.location.href='index.html'" class="text-gray-600 hover:text-primary">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="text-lg font-semibold">创建新指标</h1>
+            </div>
+        </div>
+        <!-- 步骤条 -->
+        <div class="bg-white px-8 pt-6 pb-2 border-b border-gray-100">
+            <div class="step-bar">
+                <div id="bar-step-1" class="step-indicator"><div class="step-circle">1</div><div class="step-label">基础信息</div></div>
+                <div id="bar-step-2" class="step-indicator"><div class="step-circle">2</div><div class="step-label">数据口径配置</div></div>
+                <div id="bar-step-3" class="step-indicator"><div class="step-circle">3</div><div class="step-label">计算逻辑</div></div>
+                <div id="bar-step-4" class="step-indicator"><div class="step-circle">4</div><div class="step-label">审核与发布</div></div>
+            </div>
+        </div>
+        <!-- 步骤内容 -->
+        <div class="flex-1 flex flex-col items-center justify-start px-4 py-8">
+            <!-- 步骤1：基础信息 -->
+            <form id="content-1" class="step-content w-full max-w-2xl bg-white rounded-lg shadow p-8" autocomplete="off">
+                <h2 class="text-xl font-semibold mb-6">基础信息</h2>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">指标名称 <span class="text-red-500">*</span></label>
+                    <input id="name-input" type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">主题域 <span class="text-red-500">*</span></label>
+                    <input id="domain-input" type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">标签</label>
+                    <input id="tag-input" type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">选择维度 <span class="text-red-500">*</span></label>
+                    <div id="dimension-multiselect" class="multiselect-container">
+                        <div class="multiselect-box" tabindex="0">
+                            <span class="multiselect-placeholder">请选择维度...</span>
+                        </div>
+                        <div class="multiselect-dropdown">
+                            <div class="multiselect-search">
+                                <input type="text" placeholder="搜索维度..." class="multiselect-search-input">
+                            </div>
+                            <div class="multiselect-options">
+                                <!-- 选项将通过JS动态生成 -->
+                            </div>
+                        </div>
+                        <!-- 隐藏的输入框，用于表单提交 -->
+                        <input type="hidden" id="dimension-select-hidden">
+                    </div>
+                    <small class="text-gray-400">可多选，点击选择多个维度</small>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">业务口径说明 <span class="text-red-500">*</span></label>
+                    <textarea id="desc-input" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary" rows="3" required></textarea>
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button id="next-btn-1" type="button" class="px-6 py-2 rounded text-white bg-gray-300 cursor-not-allowed" disabled>下一步</button>
+                </div>
+            </form>
+            <!-- 步骤2：数据口径配置 -->
+            <form id="content-2" class="step-content w-full max-w-2xl bg-white rounded-lg shadow p-8 hidden" autocomplete="off">
+                <h2 class="text-xl font-semibold mb-6">数据口径配置</h2>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">数据源 <span class="text-red-500">*</span></label>
+                    <input id="source-input" type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">维度 <span class="text-red-500">*</span></label>
+                    <input id="dim-input" type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">聚合函数 <span class="text-red-500">*</span></label>
+                    <select id="agg-input" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary" required>
+                        <option value="">请选择</option>
+                        <option>SUM</option>
+                        <option>COUNT</option>
+                        <option>AVG</option>
+                        <option>MAX</option>
+                        <option>MIN</option>
+                    </select>
+                </div>
+                <div class="flex justify-between mt-6">
+                    <button type="button" class="px-6 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200" id="prev-btn-2">上一步</button>
+                    <button id="next-btn-2" type="button" class="px-6 py-2 rounded text-white bg-gray-300 cursor-not-allowed" disabled>下一步</button>
+                </div>
+            </form>
+            <!-- 步骤3：计算逻辑 -->
+            <form id="content-3" class="step-content w-full max-w-2xl bg-white rounded-lg shadow p-8 hidden" autocomplete="off">
+                <h2 class="text-xl font-semibold mb-6">计算逻辑</h2>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">字段拖拽区（示意）</label>
+                    <div class="w-full h-20 border border-dashed border-gray-300 rounded flex items-center justify-center text-gray-400">拖拽字段到此处</div>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">SQL编辑器 <span class="text-red-500">*</span></label>
+                    <textarea id="sql-input" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary font-mono" rows="5" placeholder="SELECT ..." required></textarea>
+                </div>
+                <div class="mb-4 flex items-center gap-4">
+                    <button type="button" class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">预览</button>
+                    <span class="text-gray-400 text-sm">可预览SQL结果</span>
+                </div>
+                <div class="flex justify-between mt-6">
+                    <button type="button" class="px-6 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200" id="prev-btn-3">上一步</button>
+                    <button id="next-btn-3" type="button" class="px-6 py-2 rounded text-white bg-gray-300 cursor-not-allowed" disabled>下一步</button>
+                </div>
+            </form>
+            <!-- 步骤4：审核与发布 -->
+            <form id="content-4" class="step-content w-full max-w-2xl bg-white rounded-lg shadow p-8 hidden" autocomplete="off">
+                <h2 class="text-xl font-semibold mb-6">审核与发布</h2>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">选择审核人</label>
+                    <input type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">版本号</label>
+                    <input type="text" class="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-primary">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-gray-700">审批流程</label>
+                    <div class="w-full border border-gray-200 rounded px-3 py-2 bg-gray-50 text-gray-500">张三 → 李四 → 赵六</div>
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button type="button" class="px-6 py-2 bg-primary text-white rounded hover:bg-accent" id="submit-btn">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        
+        // 多选组件相关变量
+        let selectedDimensions = [];
+        let allDimensions = [];
+        
+        function showStep(step) {
+            for(let i=1;i<=totalSteps;i++) {
+                document.getElementById('content-'+i).classList.add('hidden');
+                document.getElementById('bar-step-'+i).classList.remove('active');
+            }
+            document.getElementById('content-'+step).classList.remove('hidden');
+            document.getElementById('bar-step-'+step).classList.add('active');
+        }
+        
+        function checkStep1() {
+            const name = document.getElementById('name-input').value.trim();
+            const domain = document.getElementById('domain-input').value.trim();
+            const desc = document.getElementById('desc-input').value.trim();
+            const btn = document.getElementById('next-btn-1');
+            if(name && domain && desc && selectedDimensions.length > 0) {
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-300','cursor-not-allowed');
+                btn.classList.add('bg-primary','hover:bg-accent');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-gray-300','cursor-not-allowed');
+                btn.classList.remove('bg-primary','hover:bg-accent');
+            }
+        }
+        
+        function checkStep2() {
+            const source = document.getElementById('source-input').value.trim();
+            const dim = document.getElementById('dim-input').value.trim();
+            const agg = document.getElementById('agg-input').value.trim();
+            const btn = document.getElementById('next-btn-2');
+            if(source && dim && agg) {
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-300','cursor-not-allowed');
+                btn.classList.add('bg-primary','hover:bg-accent');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-gray-300','cursor-not-allowed');
+                btn.classList.remove('bg-primary','hover:bg-accent');
+            }
+        }
+        
+        function checkStep3() {
+            const sql = document.getElementById('sql-input').value.trim();
+            const btn = document.getElementById('next-btn-3');
+            if(sql) {
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-300','cursor-not-allowed');
+                btn.classList.add('bg-primary','hover:bg-accent');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-gray-300','cursor-not-allowed');
+                btn.classList.remove('bg-primary','hover:bg-accent');
+            }
+        }
+        
+        // 初始化多选组件
+        function initMultiselect() {
+            const container = document.getElementById('dimension-multiselect');
+            const box = container.querySelector('.multiselect-box');
+            const dropdown = container.querySelector('.multiselect-dropdown');
+            const options = container.querySelector('.multiselect-options');
+            const searchInput = container.querySelector('.multiselect-search-input');
+            const hiddenInput = document.getElementById('dimension-select-hidden');
+            
+            // 点击下拉框显示/隐藏选项
+            box.addEventListener('click', function() {
+                dropdown.classList.toggle('show');
+                if (dropdown.classList.contains('show')) {
+                    searchInput.focus();
+                }
+            });
+            
+            // 点击外部关闭下拉框
+            document.addEventListener('click', function(e) {
+                if (!container.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            // 搜索功能
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase();
+                renderOptions(searchText);
+            });
+            
+            // 渲染选项
+            function renderOptions(searchText = '') {
+                options.innerHTML = '';
+                allDimensions.forEach(dim => {
+                    if (searchText && !dim.name.toLowerCase().includes(searchText)) return;
+                    
+                    const option = document.createElement('div');
+                    option.classList.add('multiselect-option');
+                    if (selectedDimensions.includes(dim.name)) {
+                        option.classList.add('selected');
+                    }
+                    option.textContent = dim.name;
+                    option.dataset.value = dim.name;
+                    
+                    option.addEventListener('click', function() {
+                        toggleDimension(dim.name);
+                        renderSelectedTags();
+                        renderOptions(searchInput.value.toLowerCase());
+                        checkStep1();
+                    });
+                    
+                    options.appendChild(option);
+                });
+            }
+            
+            // 切换选中状态
+            function toggleDimension(dimName) {
+                const index = selectedDimensions.indexOf(dimName);
+                if (index === -1) {
+                    selectedDimensions.push(dimName);
+                } else {
+                    selectedDimensions.splice(index, 1);
+                }
+                hiddenInput.value = selectedDimensions.join(',');
+            }
+            
+            // 渲染已选标签
+            function renderSelectedTags() {
+                // 清除现有内容
+                box.innerHTML = '';
+                
+                if (selectedDimensions.length === 0) {
+                    const placeholder = document.createElement('span');
+                    placeholder.classList.add('multiselect-placeholder');
+                    placeholder.textContent = '请选择维度...';
+                    box.appendChild(placeholder);
+                    return;
+                }
+                
+                // 添加已选标签
+                selectedDimensions.forEach(dim => {
+                    const tag = document.createElement('div');
+                    tag.classList.add('multiselect-tag');
+                    
+                    const text = document.createElement('span');
+                    text.textContent = dim;
+                    
+                    const remove = document.createElement('span');
+                    remove.classList.add('multiselect-tag-remove');
+                    remove.innerHTML = '&times;';
+                    remove.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleDimension(dim);
+                        renderSelectedTags();
+                        renderOptions(searchInput.value.toLowerCase());
+                        checkStep1();
+                    });
+                    
+                    tag.appendChild(text);
+                    tag.appendChild(remove);
+                    box.appendChild(tag);
+                });
+            }
+            
+            // 初始化渲染
+            renderSelectedTags();
+            renderOptions();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 步骤切换
+            document.getElementById('next-btn-1').onclick = function() { currentStep = 2; showStep(2); };
+            document.getElementById('next-btn-2').onclick = function() { currentStep = 3; showStep(3); };
+            document.getElementById('next-btn-3').onclick = function() { currentStep = 4; showStep(4); };
+            document.getElementById('prev-btn-2').onclick = function() { currentStep = 1; showStep(1); };
+            document.getElementById('prev-btn-3').onclick = function() { currentStep = 2; showStep(2); };
+            document.getElementById('submit-btn').onclick = function() { alert('已提交！'); window.location.href='index.html'; };
+            
+            // 获取维度数据
+            allDimensions = JSON.parse(localStorage.getItem('lingxi_dimensions') || '[]');
+            if (allDimensions.length === 0) {
+                // 默认维度
+                allDimensions = [
+                    { name: '所在地区', count: 3 },
+                    { name: '品牌', count: 2 },
+                    { name: '合作商户', count: 5 },
+                    { name: '对接商务', count: 4 },
+                    { name: '签约商务', count: 2 },
+                    { name: '部门', count: 3 },
+                    { name: '部门经理', count: 2 },
+                    { name: '负责地区', count: 1 }
+                ];
+            }
+            
+            // 初始化多选组件
+            initMultiselect();
+            
+            // 校验
+            document.getElementById('name-input').addEventListener('input', checkStep1);
+            document.getElementById('domain-input').addEventListener('input', checkStep1);
+            document.getElementById('desc-input').addEventListener('input', checkStep1);
+            document.getElementById('source-input').addEventListener('input', checkStep2);
+            document.getElementById('dim-input').addEventListener('input', checkStep2);
+            document.getElementById('agg-input').addEventListener('change', checkStep2);
+            document.getElementById('sql-input').addEventListener('input', checkStep3);
+            
+            // 初始化
+            showStep(currentStep);
+            checkStep1();
+            checkStep2();
+            checkStep3();
+        });
+    </script>
+</body>
+</html> 
