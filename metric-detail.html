@@ -49,16 +49,14 @@
             border-radius: 8px;
             margin: 16px 0;
         }
-        .tab-item {
-            padding: 12px 24px;
-            color: #6B7280;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .tab-item.active {
-            color: #10B981;
-            border-bottom-color: #10B981;
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #10B981;
+            display: inline-block;
         }
         .info-card {
             background: white;
@@ -110,6 +108,9 @@
         }
         .alert-card.warning {
             border-left: 4px solid #F59E0B;
+        }
+        .section-container {
+            margin-bottom: 2rem;
         }
     </style>
 </head>
@@ -170,250 +171,248 @@
                 </div>
             </div>
 
-            <!-- 标签页 -->
-            <div class="bg-white rounded-lg mb-6">
-                <div class="flex border-b border-gray-200">
-                    <div class="tab-item active" data-tab="trend">趋势分析</div>
-                    <div class="tab-item" data-tab="info">指标信息</div>
-                    <div class="tab-item" data-tab="usage">使用记录</div>
-                    <div class="tab-item" data-tab="alert">预警设置</div>
-                </div>
-                <div class="p-6">
-                    <!-- 趋势分析内容 -->
-                    <div id="trend-content" class="tab-content">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex gap-2">
-                                <button class="px-3 py-1 text-sm bg-gray-100 rounded">日</button>
-                                <button class="px-3 py-1 text-sm bg-primary text-white rounded">月</button>
-                                <button class="px-3 py-1 text-sm bg-gray-100 rounded">年</button>
-                            </div>
-                            <div class="flex gap-2">
-                                <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
-                                    <i class="fas fa-download mr-2"></i>导出
-                                </button>
-                                <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
-                                    <i class="fas fa-expand mr-2"></i>全屏
-                                </button>
-                            </div>
+            <!-- 平铺展示所有内容 -->
+            <!-- 1. 趋势分析部分 -->
+            <div class="section-container">
+                <h2 class="section-title">趋势分析</h2>
+                <div class="bg-white rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 text-sm bg-gray-100 rounded">日</button>
+                            <button class="px-3 py-1 text-sm bg-primary text-white rounded">月</button>
+                            <button class="px-3 py-1 text-sm bg-gray-100 rounded">年</button>
                         </div>
-                        
-                        <!-- 新增：维度筛选 -->
-                        <div class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
-                            <span class="text-sm text-gray-500">按维度查看：</span>
-                            <div class="relative">
-                                <select class="appearance-none bg-white border border-gray-200 rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:border-primary">
-                                    <option value="">全部</option>
-                                    <option value="area">所在地区</option>
-                                    <option value="brand">品牌</option>
-                                    <option value="merchant">合作商户</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                                    <i class="fas fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
-                            
-                            <div class="relative ml-4">
-                                <select class="appearance-none bg-white border border-gray-200 rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:border-primary">
-                                    <option value="">选择地区</option>
-                                    <option value="beijing">北京</option>
-                                    <option value="shanghai">上海</option>
-                                    <option value="guangzhou">广州</option>
-                                    <option value="shenzhen">深圳</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                                    <i class="fas fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
-                            
-                            <button class="ml-auto px-3 py-1 text-sm bg-primary text-white rounded">
-                                应用筛选
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
+                                <i class="fas fa-download mr-2"></i>导出
+                            </button>
+                            <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
+                                <i class="fas fa-expand mr-2"></i>全屏
                             </button>
                         </div>
-                        
-                        <div id="trend-chart" class="chart-container"></div>
                     </div>
-
-                    <!-- 指标信息内容 -->
-                    <div id="info-content" class="tab-content hidden">
-                        <div class="info-card">
-                            <h3 class="text-lg font-semibold mb-4">基本信息</h3>
-                            <div class="info-row">
-                                <div class="info-label">指标名称</div>
-                                <div class="info-value">充值金额</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">指标编码</div>
-                                <div class="info-value">recharge_amount</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">业务分类</div>
-                                <div class="info-value">充值相关</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">指标类型</div>
-                                <div class="info-value">
-                                    <span class="px-2 py-1 rounded text-xs bg-blue-100 text-blue-600" title="原子指标是业务活动中不可再分的、具体的衡量指标，如单笔订单的发放金额。">原子指标</span>
-                                </div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">更新频率</div>
-                                <div class="info-value">实时</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">负责人</div>
-                                <div class="info-value">张三</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">创建时间</div>
-                                <div class="info-value">2024-01-01</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">最后更新</div>
-                                <div class="info-value">2024-03-15 15:30:00</div>
+                    
+                    <div class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm text-gray-500">按维度查看：</span>
+                        <div class="relative">
+                            <select id="dimension-select" class="appearance-none bg-white border border-gray-200 rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:border-primary">
+                                <option value="">全部</option>
+                                <option value="area">所在地区</option>
+                                <option value="brand">品牌</option>
+                                <option value="merchant">合作商户</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
                             </div>
                         </div>
-
-                        <div class="info-card">
-                            <h3 class="text-lg font-semibold mb-4">指标说明</h3>
-                            <div class="text-gray-600">
-                                <p class="mb-4">商户向平台充值的总金额，包括现金充值和权益充值。</p>
-                                <h4 class="font-medium mb-2">计算口径：</h4>
-                                <p class="mb-2">1. 统计周期：自然日</p>
-                                <p class="mb-2">2. 统计范围：所有商户</p>
-                                <p class="mb-2">3. 统计方式：按充值时间统计</p>
-                                <p>4. 数据来源：充值订单表</p>
+                        
+                        <div class="relative ml-4">
+                            <select id="value-select" class="appearance-none bg-white border border-gray-200 rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:border-primary">
+                                <option value="">选择地区</option>
+                                <option value="beijing">北京</option>
+                                <option value="shanghai">上海</option>
+                                <option value="guangzhou">广州</option>
+                                <option value="shenzhen">深圳</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
                             </div>
-                            <div class="mt-6">
-                                <h4 class="font-medium mb-2">统计SQL：</h4>
-                                <pre class="bg-gray-100 rounded p-3 text-sm overflow-x-auto"><code>SELECT SUM(amount) AS recharge_amount
+                        </div>
+                        
+                        <button class="ml-auto px-3 py-1 text-sm bg-primary text-white rounded">
+                            应用筛选
+                        </button>
+                    </div>
+                    
+                    <div id="trend-chart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- 2. 指标信息部分 -->
+            <div class="section-container">
+                <h2 class="section-title">指标信息</h2>
+                <div class="info-card">
+                    <h3 class="text-lg font-semibold mb-4">基本信息</h3>
+                    <div class="info-row">
+                        <div class="info-label">指标名称</div>
+                        <div class="info-value">充值金额</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">指标编码</div>
+                        <div class="info-value">recharge_amount</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">业务分类</div>
+                        <div class="info-value">充值相关</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">指标类型</div>
+                        <div class="info-value">
+                            <span class="px-2 py-1 rounded text-xs bg-blue-100 text-blue-600" title="原子指标是业务活动中不可再分的、具体的衡量指标，如单笔订单的发放金额。">原子指标</span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">更新频率</div>
+                        <div class="info-value">实时</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">负责人</div>
+                        <div class="info-value">张三</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">创建时间</div>
+                        <div class="info-value">2024-01-01</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">最后更新</div>
+                        <div class="info-value">2024-03-15 15:30:00</div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="text-lg font-semibold mb-4">指标说明</h3>
+                    <div class="text-gray-600">
+                        <p class="mb-4">商户向平台充值的总金额，包括现金充值和权益充值。</p>
+                        <h4 class="font-medium mb-2">计算口径：</h4>
+                        <p class="mb-2">1. 统计周期：自然日</p>
+                        <p class="mb-2">2. 统计范围：所有商户</p>
+                        <p class="mb-2">3. 统计方式：按充值时间统计</p>
+                        <p>4. 数据来源：充值订单表</p>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-medium mb-2">统计SQL：</h4>
+                        <pre class="bg-gray-100 rounded p-3 text-sm overflow-x-auto"><code>SELECT SUM(amount) AS recharge_amount
 FROM recharge_order
 WHERE status = 'SUCCESS' AND refund_flag = 0
   AND recharge_time BETWEEN '{start_date}' AND '{end_date}'</code></pre>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
-                        <!-- 新增：指标与维度关系 -->
-                        <div class="info-card">
-                            <h3 class="text-lg font-semibold mb-4">维度关联</h3>
-                            <p class="text-sm text-gray-500 mb-4">该指标可按以下维度进行聚合分析</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="border rounded-lg p-4">
-                                    <div class="flex justify-between items-center">
-                                        <div class="font-medium">所在地区</div>
-                                        <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">已启用</span>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-2">可按地区维度查看充值金额分布</p>
-                                </div>
-                                <div class="border rounded-lg p-4">
-                                    <div class="flex justify-between items-center">
-                                        <div class="font-medium">品牌</div>
-                                        <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">已启用</span>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-2">可按品牌维度查看充值金额分布</p>
-                                </div>
-                                <div class="border rounded-lg p-4">
-                                    <div class="flex justify-between items-center">
-                                        <div class="font-medium">合作商户</div>
-                                        <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">已启用</span>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-2">可按商户维度查看充值金额分布</p>
-                                </div>
-                                <div class="border rounded-lg p-4">
-                                    <div class="flex justify-between items-center">
-                                        <div class="font-medium">部门</div>
-                                        <span class="px-2 py-1 bg-gray-100 text-gray-500 rounded-full text-xs">未启用</span>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-2">可按部门维度查看充值金额分布</p>
-                                </div>
+                <div class="info-card">
+                    <h3 class="text-lg font-semibold mb-4">维度关联</h3>
+                    <p class="text-sm text-gray-500 mb-4">该指标可按以下维度进行聚合分析</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div class="font-medium">所在地区</div>
+                                <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">已启用</span>
                             </div>
-                            <div class="mt-4 flex justify-end">
-                                <button class="px-3 py-1 text-sm text-primary hover:bg-primary/10 rounded flex items-center">
-                                    <i class="fas fa-plus mr-1"></i>关联更多维度
-                                </button>
+                            <p class="text-sm text-gray-500 mt-2">可按地区维度查看充值金额分布</p>
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div class="font-medium">品牌</div>
+                                <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">已启用</span>
                             </div>
+                            <p class="text-sm text-gray-500 mt-2">可按品牌维度查看充值金额分布</p>
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div class="font-medium">合作商户</div>
+                                <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">已启用</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">可按商户维度查看充值金额分布</p>
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div class="font-medium">部门</div>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-500 rounded-full text-xs">未启用</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">可按部门维度查看充值金额分布</p>
                         </div>
                     </div>
-
-                    <!-- 使用记录内容 -->
-                    <div id="usage-content" class="tab-content hidden">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold">使用记录</h3>
-                            <div class="flex gap-2">
-                                <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
-                                    <i class="fas fa-filter mr-2"></i>筛选
-                                </button>
-                                <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
-                                    <i class="fas fa-download mr-2"></i>导出
-                                </button>
-                            </div>
-                        </div>
-                        <table class="usage-table">
-                            <thead>
-                                <tr>
-                                    <th>使用时间</th>
-                                    <th>使用场景</th>
-                                    <th>使用人</th>
-                                    <th>使用方式</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>2024-03-15 15:30</td>
-                                    <td>业务看板</td>
-                                    <td>李四</td>
-                                    <td>图表展示</td>
-                                </tr>
-                                <tr>
-                                    <td>2024-03-15 14:20</td>
-                                    <td>数据分析</td>
-                                    <td>王五</td>
-                                    <td>API调用</td>
-                                </tr>
-                                <tr>
-                                    <td>2024-03-15 10:15</td>
-                                    <td>报表导出</td>
-                                    <td>赵六</td>
-                                    <td>数据导出</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="mt-4 flex justify-end">
+                        <button class="px-3 py-1 text-sm text-primary hover:bg-primary/10 rounded flex items-center">
+                            <i class="fas fa-plus mr-1"></i>关联更多维度
+                        </button>
                     </div>
+                </div>
+            </div>
 
-                    <!-- 预警设置内容 -->
-                    <div id="alert-content" class="tab-content hidden">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold">预警设置</h3>
-                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-accent">
-                                <i class="fas fa-plus mr-2"></i>新增预警
+            <!-- 3. 使用记录部分 -->
+            <div class="section-container">
+                <h2 class="section-title">使用记录</h2>
+                <div class="bg-white rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">最近使用情况</h3>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
+                                <i class="fas fa-filter mr-2"></i>筛选
+                            </button>
+                            <button class="px-3 py-1 text-sm text-gray-600 hover:text-primary">
+                                <i class="fas fa-download mr-2"></i>导出
                             </button>
                         </div>
-                        <div class="alert-card active">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-medium">日充值金额预警</h4>
-                                    <p class="text-sm text-gray-500 mt-1">当日充值金额低于 100,000 元时触发</p>
-                                </div>
-                                <span class="px-2 py-1 bg-green-100 text-green-600 rounded text-sm">正常</span>
+                    </div>
+                    <table class="usage-table">
+                        <thead>
+                            <tr>
+                                <th>使用时间</th>
+                                <th>使用场景</th>
+                                <th>使用人</th>
+                                <th>使用方式</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-03-15 15:30</td>
+                                <td>业务看板</td>
+                                <td>李四</td>
+                                <td>图表展示</td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-15 14:20</td>
+                                <td>数据分析</td>
+                                <td>王五</td>
+                                <td>API调用</td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-15 10:15</td>
+                                <td>报表导出</td>
+                                <td>赵六</td>
+                                <td>数据导出</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. 预警设置部分 -->
+            <div class="section-container">
+                <h2 class="section-title">预警设置</h2>
+                <div class="bg-white rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">当前预警规则</h3>
+                        <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-accent">
+                            <i class="fas fa-plus mr-2"></i>新增预警
+                        </button>
+                    </div>
+                    <div class="alert-card active">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium">日充值金额预警</h4>
+                                <p class="text-sm text-gray-500 mt-1">当日充值金额低于 100,000 元时触发</p>
                             </div>
-                            <div class="flex gap-4 mt-4 text-sm text-gray-500">
-                                <span>通知方式：邮件、应用内</span>
-                                <span>创建人：张三</span>
-                                <span>最近检查：2024-03-15 15:30</span>
-                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-600 rounded text-sm">正常</span>
                         </div>
-                        <div class="alert-card warning">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-medium">充值环比预警</h4>
-                                    <p class="text-sm text-gray-500 mt-1">日环比下降超过 20% 时触发</p>
-                                </div>
-                                <span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded text-sm">已触发</span>
+                        <div class="flex gap-4 mt-4 text-sm text-gray-500">
+                            <span>通知方式：邮件、应用内</span>
+                            <span>创建人：张三</span>
+                            <span>最近检查：2024-03-15 15:30</span>
+                        </div>
+                    </div>
+                    <div class="alert-card warning mt-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium">充值环比预警</h4>
+                                <p class="text-sm text-gray-500 mt-1">日环比下降超过 20% 时触发</p>
                             </div>
-                            <div class="flex gap-4 mt-4 text-sm text-gray-500">
-                                <span>通知方式：邮件、短信</span>
-                                <span>创建人：李四</span>
-                                <span>最近触发：2024-03-15 14:20</span>
-                            </div>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded text-sm">已触发</span>
+                        </div>
+                        <div class="flex gap-4 mt-4 text-sm text-gray-500">
+                            <span>通知方式：邮件、短信</span>
+                            <span>创建人：李四</span>
+                            <span>最近触发：2024-03-15 14:20</span>
                         </div>
                     </div>
                 </div>
@@ -422,22 +421,6 @@ WHERE status = 'SUCCESS' AND refund_flag = 0
     </div>
 
     <script>
-        // 标签页切换
-        document.querySelectorAll('.tab-item').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // 更新标签页状态
-                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                // 更新内容显示
-                const tabId = tab.getAttribute('data-tab');
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.add('hidden');
-                });
-                document.getElementById(`${tabId}-content`).classList.remove('hidden');
-            });
-        });
-
         // 导航项切换
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -446,9 +429,9 @@ WHERE status = 'SUCCESS' AND refund_flag = 0
             });
         });
         
-        // 新增：维度选择交互逻辑
-        const dimensionSelect = document.querySelectorAll('select')[0];
-        const valueSelect = document.querySelectorAll('select')[1];
+        // 维度选择交互逻辑
+        const dimensionSelect = document.getElementById('dimension-select');
+        const valueSelect = document.getElementById('value-select');
         const dimensionOptions = {
             '': ['选择地区/品牌/商户'],
             'area': ['选择地区', '北京', '上海', '广州', '深圳', '杭州', '成都'],
